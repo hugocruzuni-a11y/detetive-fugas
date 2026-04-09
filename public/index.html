@@ -19,9 +19,14 @@
 
     <main class="max-w-2xl mx-auto px-6 mb-20">
         <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
-            <textarea id="extratoInput" rows="8" class="w-full w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none text-sm font-mono" placeholder="Exemplo:&#10;12/04 Netflix 15.99€&#10;13/04 Pingo Doce 45.00€&#10;14/04 Ginásio Holmes Place 60.00€..."></textarea>
             
-            <button id="btnAnalisar" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition duration-200 flex justify-center items-center gap-2">
+            <div id="dropzone" class="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center cursor-pointer hover:bg-slate-50 transition duration-200 flex flex-col items-center justify-center gap-3">
+                <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                <p class="text-slate-600 font-medium" id="dropzoneText">Arrasta o PDF do teu extrato para aqui<br><span class="text-sm font-normal text-slate-400">ou clica para selecionar do computador</span></p>
+                <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+            </div>
+
+            <button id="btnAnalisar" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 hidden">
                 <span id="btnTexto">Analisar o meu Extrato Agora</span>
                 <svg id="loadingIcon" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </button>
@@ -35,8 +40,7 @@
             </div>
 
             <h3 class="text-xl font-bold mb-4">Os teus "Furos" Financeiros:</h3>
-            <div id="listaSubscricoes" class="space-y-3">
-                </div>
+            <div id="listaSubscricoes" class="space-y-3"></div>
             
             <button class="mt-8 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition duration-200 shadow-lg shadow-emerald-200">
                 Gerar Guia de Cancelamento Automático (4,99€)
