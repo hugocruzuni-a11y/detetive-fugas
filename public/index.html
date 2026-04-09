@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detetive de Fugas | Encontra Dinheiro Perdido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <header class="max-w-3xl mx-auto pt-20 pb-10 px-6 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+            Para de deitar <span class="text-emerald-600">dinheiro ao lixo</span> todos os meses.
+        </h1>
+        <p class="text-lg text-slate-600 mb-8">
+            Cola o texto do teu extrato bancário abaixo. A nossa IA deteta subscrições escondidas, taxas abusivas e diz-te exatamente quanto estás a perder em 5 segundos. <br><b>100% Seguro. Não guardamos os teus dados.</b>
+        </p>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-6 mb-20">
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+            <textarea id="extratoInput" rows="8" class="w-full w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none text-sm font-mono" placeholder="Exemplo:&#10;12/04 Netflix 15.99€&#10;13/04 Pingo Doce 45.00€&#10;14/04 Ginásio Holmes Place 60.00€..."></textarea>
+            
+            <button id="btnAnalisar" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition duration-200 flex justify-center items-center gap-2">
+                <span id="btnTexto">Analisar o meu Extrato Agora</span>
+                <svg id="loadingIcon" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            </button>
+        </div>
+
+        <div id="areaResultados" class="mt-8 hidden">
+            <div class="bg-rose-50 border border-rose-200 p-6 rounded-2xl text-center mb-6">
+                <h3 class="text-rose-600 font-bold uppercase tracking-wide text-sm mb-1">Desperdício Anual Estimado</h3>
+                <p id="valorAnual" class="text-5xl font-black text-rose-700">0€</p>
+                <p id="mensagemImpacto" class="text-rose-600 mt-2 text-sm font-medium"></p>
+            </div>
+
+            <h3 class="text-xl font-bold mb-4">Os teus "Furos" Financeiros:</h3>
+            <div id="listaSubscricoes" class="space-y-3">
+                </div>
+            
+            <button class="mt-8 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition duration-200 shadow-lg shadow-emerald-200">
+                Gerar Guia de Cancelamento Automático (4,99€)
+            </button>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
