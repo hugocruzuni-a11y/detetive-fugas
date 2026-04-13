@@ -5,7 +5,9 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const multer = require('multer');
 
 // --- LIGAÇÃO AO STRIPE ---
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
+// No topo do teu index.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Tem de ser igual ao nome no Render
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Tem de ser igual ao nome no Render
 
 const app = express();
 app.use(cors());
