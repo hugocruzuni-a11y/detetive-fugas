@@ -7,7 +7,7 @@ const multer = require('multer');
 // --- LIGAÇÃO AO STRIPE ---
 // No topo do teu index.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Tem de ser igual ao nome no Render
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Tem de ser igual ao nome no Render
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Tem de ser igual ao nome no Rendergit add
 
 const app = express();
 app.use(cors());
@@ -19,7 +19,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // --- ROTA 1: A IA QUE DETETA AS FUGAS ---
 app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
-    console.log("\n-----------------------------------------");
     console.log("🕵️ INÍCIO DA INVESTIGAÇÃO 2050...");
     
     if (!req.file) {
