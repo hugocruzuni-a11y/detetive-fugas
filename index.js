@@ -15,7 +15,6 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const upload = multer({ storage: multer.memoryStorage() }); 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // --- ROTA 1: A IA QUE DETETA AS FUGAS ---
 app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
