@@ -7,28 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(-45deg, #f8fafc, #ecfdf5, #f0fdfa, #f8fafc);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(-45deg, #f8fafc, #ecfdf5, #f0fdfa, #f8fafc); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        .neo-glass { 
-            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.9); 
-            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.1);
-        }
-        .scanner-line {
-            position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(to right, transparent, #10b981, transparent);
-            box-shadow: 0 2px 10px #10b981; animation: scan 2s infinite linear; opacity: 0; transition: opacity 0.3s;
-        }
+        .neo-glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.1); }
+        .scanner-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, #10b981, transparent); box-shadow: 0 2px 10px #10b981; animation: scan 2s infinite linear; opacity: 0; transition: opacity 0.3s; }
         .group:hover .scanner-line { opacity: 1; }
         @keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        
-        /* Blur do Paywall */
         .locked-item { background-image: repeating-linear-gradient(45deg, rgba(241,245,249,0.5) 0, rgba(241,245,249,0.5) 4px, transparent 4px, transparent 8px); }
     </style>
 </head>
@@ -52,7 +36,6 @@
     </header>
 
     <main class="w-full max-w-2xl mx-auto px-4 sm:px-6 flex-1 flex flex-col relative z-10 pb-12">
-        
         <div class="neo-glass p-4 sm:p-6 rounded-[2rem] relative overflow-hidden w-full" id="areaUpload">
             <div id="dropzone" class="relative border-2 border-dashed border-slate-300/80 bg-white/50 rounded-[1.5rem] p-8 sm:p-12 text-center cursor-pointer hover:bg-white hover:border-emerald-400 transition-all flex flex-col items-center gap-3 group overflow-hidden">
                 <div class="scanner-line"></div>
@@ -82,7 +65,6 @@
         </div>
 
         <div id="areaResultados" class="mt-8 hidden w-full">
-            
             <div class="bg-slate-900 p-8 sm:p-10 rounded-[2rem] text-center mb-8 shadow-2xl relative overflow-hidden">
                 <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-400"></div>
                 <h3 class="text-emerald-400 font-black uppercase tracking-[0.15em] text-[10px] sm:text-xs mb-2">Desperdício Anual Encontrado</h3>
@@ -109,11 +91,6 @@
                 <p class="text-slate-500 mb-6 font-medium text-xs sm:text-sm leading-relaxed max-w-sm mx-auto">
                     Desbloqueia os nomes ocultos e recebe as <strong class="text-slate-800">minutas de lei europeia</strong> prontas a enviar para cancelares todas as taxas agora mesmo.
                 </p>
-                
-                <div class="w-full max-w-sm mx-auto mb-4 relative">
-                    <input type="email" required placeholder="O teu melhor e-mail..." class="w-full pl-4 pr-10 py-3 sm:py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm font-semibold text-slate-800 transition-all">
-                </div>
-                
                 <button id="btnPagar" class="w-full max-w-sm mx-auto bg-slate-900 text-white font-black text-base sm:text-lg py-3 sm:py-4 rounded-xl hover:-translate-y-0.5 transition-all flex flex-col items-center gap-0.5 group shadow-lg">
                     <span id="txtBtnPagar" class="flex items-center gap-2">
                         Desbloquear Acesso Total
