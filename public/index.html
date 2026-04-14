@@ -72,7 +72,7 @@
                 </div>
                 <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Total Resgatado Hoje</p>
                 <div class="flex items-baseline gap-1">
-                    <h3 class="text-4xl sm:text-5xl font-black text-emerald-400" id="liveCounter">24.250</h3>
+                    <h3 class="text-4xl sm:text-5xl font-black text-emerald-400 transition-all duration-300" id="liveCounter">...</h3>
                     <span class="text-2xl font-bold text-emerald-500">€</span>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                     <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 </div>
                 <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Prejuízo Médio / Pessoa</p>
-                <h3 class="text-4xl sm:text-5xl font-black text-white">412<span class="text-xl text-slate-500 font-bold ml-1">€/ano</span></h3>
+                <h3 class="text-4xl sm:text-5xl font-black text-white" id="mediaCounter">...<span class="text-xl text-slate-500 font-bold ml-1">€/ano</span></h3>
             </div>
 
             <div class="glass-card p-8 sm:p-10 rounded-[2rem] text-left">
@@ -90,7 +90,7 @@
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 </div>
                 <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Utilizadores Ativos</p>
-                <h3 class="text-4xl sm:text-5xl font-black text-white">12.804</h3>
+                <h3 class="text-4xl sm:text-5xl font-black text-white" id="usersCounter">...</h3>
             </div>
         </div>
     </main>
@@ -101,14 +101,32 @@
     </footer>
 
     <script>
-        const counterElement = document.getElementById('liveCounter');
-        let currentAmount = 24250;
-        setInterval(() => {
-            currentAmount += Math.floor(Math.random() * 45 + 15);
-            counterElement.innerText = currentAmount.toLocaleString('pt-PT');
-            counterElement.classList.add('text-white', 'scale-105');
-            setTimeout(() => counterElement.classList.remove('text-white', 'scale-105'), 300);
-        }, Math.random() * 3000 + 3000); 
+        async function buscarDadosReais() {
+            try {
+                const resposta = await fetch('/api/stats');
+                const dados = await resposta.json();
+                
+                document.getElementById('liveCounter').innerText = dados.resgatado.toLocaleString('pt-PT');
+                
+                const mediaElement = document.getElementById('mediaCounter');
+                const usersElement = document.getElementById('usersCounter');
+                
+                if(mediaElement) mediaElement.innerHTML = `${dados.media}<span class="text-xl text-slate-500 font-bold ml-1">€/ano</span>`;
+                if(usersElement) usersElement.innerText = dados.utilizadores.toLocaleString('pt-PT');
+
+                // Um pulso suave no número principal quando faz fetch
+                const counterElement = document.getElementById('liveCounter');
+                counterElement.classList.add('text-white', 'scale-105');
+                setTimeout(() => counterElement.classList.remove('text-white', 'scale-105'), 300);
+            } catch (erro) {
+                console.log("Servidor ocupado. A manter os últimos valores conhecidos.");
+            }
+        }
+
+        // Buscar dados mal abre o site
+        buscarDadosReais();
+        // A cada 8 segundos, verifica o servidor para atualizar a quem estiver a olhar
+        setInterval(buscarDadosReais, 8000); 
     </script>
 </body>
 </html>

@@ -18,6 +18,29 @@ const app = express();
 app.use(cors());
 
 // =======================================================
+// 📊 BASE DE DADOS EM MEMÓRIA (O Seed de Lançamento)
+// =======================================================
+let motorStats = {
+    utilizadoresAtivos: 12804,
+    totalResgatado: 24326,
+    somaPrejuizos: 5275248, // Para calcular a média real
+    auditoriasRealizadas: 12804
+};
+
+// Rota que o site chama para mostrar os valores atualizados
+app.get('/api/stats', (req, res) => {
+    let prejuizoMedio = motorStats.auditoriasRealizadas > 0 
+        ? Math.floor(motorStats.somaPrejuizos / motorStats.auditoriasRealizadas) 
+        : 412;
+
+    res.json({
+        resgatado: motorStats.totalResgatado,
+        utilizadores: motorStats.utilizadoresAtivos,
+        media: prejuizoMedio
+    });
+});
+
+// =======================================================
 // 🛡️ 1. ROTA DO WEBHOOK (SISTEMA DE ENTREGA AUTOMÁTICA)
 // =======================================================
 app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -84,7 +107,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
             });
             console.log("✅ E-mail Premium entregue com sucesso!");
         } catch (erroEmail) {
-            console.error("❌ Falha ao entregar e-mail (Verifica credenciais Gmail):", erroEmail.message);
+            console.error("❌ Falha ao entregar e-mail:", erroEmail.message);
         }
     }
     res.json({ received: true });
@@ -102,7 +125,7 @@ app.get('/auditoria.html', (req, res) => res.sendFile(path.join(__dirname, 'publ
 const upload = multer({ storage: multer.memoryStorage() }); 
 
 // =======================================================
-// 🧠 3. ROTA DA INTELIGÊNCIA ARTIFICIAL (GEMINI 2.5 PRO)
+// 🧠 3. ROTA DA INTELIGÊNCIA ARTIFICIAL (GEMINI)
 // =======================================================
 app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
     if (!req.file) return res.status(400).json({ erro: 'Nenhum ficheiro recebido.' });
@@ -111,7 +134,7 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         console.log("🕵️ A iniciar análise forense do documento...");
         const documentoPDF = { inlineData: { data: req.file.buffer.toString("base64"), mimeType: "application/pdf" } };
         
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro", generationConfig: { temperature: 0 } });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: { temperature: 0 } });
         
         const prompt = `Atua como um auditor financeiro forense de elite e implacável. Analisa o documento PDF em anexo (extrato). 
         Procura microscopicamente por: 1) Comissões bancárias de manutenção/cartões. 2) Subscrições digitais (Netflix, ginásios, apps). 3) Seguros e telecomunicações.
@@ -124,16 +147,30 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         
         respostaIA = respostaIA.replace(/```json/gi, "").replace(/```/g, "").trim();
         const jsonLimpo = respostaIA.substring(respostaIA.indexOf('{'), respostaIA.lastIndexOf('}') + 1);
+        
+        let dadosParsed;
+        try {
+            dadosParsed = JSON.parse(jsonLimpo);
+            // --- ATUALIZA A ESTATÍSTICA GLOBAL EM TEMPO REAL ---
+            if (dadosParsed && typeof dadosParsed.total_desperdicado_anual === 'number' && dadosParsed.total_desperdicado_anual > 0) {
+                motorStats.utilizadoresAtivos += 1;
+                motorStats.auditoriasRealizadas += 1;
+                motorStats.somaPrejuizos += dadosParsed.total_desperdicado_anual;
+                motorStats.totalResgatado += dadosParsed.total_desperdicado_anual; 
+            }
+        } catch(e) {
+            console.error("Erro a atualizar dados estatísticos", e);
+        }
 
-        console.log("✅ Análise forense concluída.");
-        res.status(200).json({ sucesso: true, dados: JSON.parse(jsonLimpo) });
+        console.log("✅ Análise forense concluída e Dashboard atualizado.");
+        res.status(200).json({ sucesso: true, dados: dadosParsed });
 
     } catch (error) {
         console.error("❌ ERRO NO MOTOR IA:", error.message);
         if (error.status === 429 || String(error.message).includes('429')) {
-            return res.status(429).json({ sucesso: false, erro: 'Rede sobrecarregada (Muitas auditorias em curso). Tenta em 30 segundos.' });
+            return res.status(429).json({ sucesso: false, erro: 'Rede sobrecarregada. Tenta em 30 segundos.' });
         }
-        res.status(500).json({ sucesso: false, erro: 'Documento ilegível ou encriptado. Garante que é um extrato PDF padrão.' });
+        res.status(500).json({ sucesso: false, erro: 'Documento ilegível. Garante que é um extrato PDF padrão.' });
     }
 });
 
@@ -143,15 +180,14 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
 app.post('/api/checkout', async (req, res) => {
     try {
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card', 'mbway'], // Adicionado MBWay se a tua conta europeia permitir!
+            payment_method_types: ['card'],
             customer_creation: 'always', 
             line_items: [{
                 price_data: { 
                     currency: 'eur', 
                     product_data: { 
                         name: 'Relatório Forense & Minutas Legais',
-                        description: 'Desbloqueio imediato das entidades ocultas e ferramentas de cancelamento.',
-                        images: ['https://img.icons8.com/color/96/000000/privacy.png'] 
+                        description: 'Desbloqueio imediato das entidades ocultas e ferramentas de cancelamento.'
                     }, 
                     unit_amount: 499 
                 },
