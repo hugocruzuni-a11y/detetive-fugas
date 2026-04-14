@@ -104,8 +104,8 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         console.log("🕵️ A iniciar análise do documento...");
         const documentoPDF = { inlineData: { data: req.file.buffer.toString("base64"), mimeType: "application/pdf" } };
         
-        // Uso garantido do modelo 1.5 Pro (mais estável)
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: { temperature: 0 } });
+        // Uso garantido do modelo 2.5 Pro (mais estável)
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro", generationConfig: { temperature: 0 } });
         
         const prompt = `És um detetive financeiro robótico e implacável. Analisa o documento PDF em anexo. 
         Se for um extrato bancário, extrai taxas ocultas, subscrições e seguros. 
