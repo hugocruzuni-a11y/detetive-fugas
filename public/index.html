@@ -3,206 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Detetive de Fugas - A IA que encontra o teu dinheiro roubado.">
-    <title>Detetive de Fugas | Auditoria IA Avançada</title>
+    <meta name="description" content="A primeira Inteligência Artificial que analisa o teu extrato bancário e deteta fugas de capital em 10 segundos.">
+    <title>Detetive de Fugas | Resgata o Teu Dinheiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(-45deg, #f8fafc, #ecfdf5, #f0fdfa, #f8fafc);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
         
-        .neo-glass { 
-            background: rgba(255, 255, 255, 0.65); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.9); 
-            box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.1), 0 0 0 1px rgba(255,255,255,0.5) inset;
-        }
-        
-        .glow-text { text-shadow: 0 0 30px rgba(16, 185, 129, 0.3); }
-        
-        .scanner-line {
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(to right, transparent, #10b981, transparent);
-            box-shadow: 0 2px 10px #10b981;
-            animation: scan 2.5s infinite linear;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .group:hover .scanner-line { opacity: 1; }
-        @keyframes scan {
-            0% { top: 0; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+        /* Fundo Animado Tech */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, transparent, black, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 10%, black 50%, transparent 90%);
         }
 
-        .locked-item {
-            background-image: repeating-linear-gradient(45deg, rgba(241, 245, 249, 0.6) 0, rgba(241, 245, 249, 0.6) 4px, rgba(248, 250, 252, 0.8) 4px, rgba(248, 250, 252, 0.8) 8px);
-            position: relative;
-            cursor: pointer;
+        .glow-emerald { text-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Animação de Flutuação */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
-        .locked-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease;
-        }
-        .locked-item:hover::after {
-            transform: translateX(100%);
-        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen antialiased flex flex-col relative overflow-x-hidden">
+<body class="relative antialiased selection:bg-emerald-500 selection:text-white">
 
-    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 opacity-0 -translate-y-10 pointer-events-none">
-        <div class="bg-slate-900/95 backdrop-blur-md text-white px-6 py-3 rounded-2xl shadow-2xl font-semibold text-sm flex items-center gap-3 border border-slate-700/50">
-            <span id="toastIcon" class="text-lg">⚠️</span>
-            <span id="toastMsg" class="tracking-wide">Mensagem</span>
+    <div class="fixed inset-0 bg-grid pointer-events-none z-0"></div>
+    <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-teal-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <nav class="relative z-50 max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <span class="font-black text-xl tracking-tighter text-white">Detetive<span class="text-emerald-400">Fugas</span></span>
         </div>
-    </div>
+        <a href="/auditoria.html" class="glass-panel text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-slate-900 hover:border-emerald-400 transition-all duration-300 shadow-lg">Inspecionar Extrato</a>
+    </nav>
 
-    <header class="text-center pt-10 md:pt-14 pb-6 px-4 relative z-10">
-        <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-emerald-700 text-[10px] font-bold px-4 py-2 rounded-full uppercase tracking-widest mb-6 border border-emerald-100 shadow-sm">
-            <span class="relative flex h-2 w-2 mr-1">
+    <header class="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-32 text-center">
+        
+        <div class="inline-flex items-center gap-2 glass-panel text-emerald-400 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-widest mb-8 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)] animate-float">
+            <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            IA Neural Ativa &bull; Segurança Bancária
+            Motor Neural Gemini 2.5 Pro Ativo
         </div>
         
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4 leading-tight">
-            O teu banco não quer<br>que vejas <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 glow-text">isto.</span>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.05] text-white">
+            O teu banco rouba-te.<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 glow-emerald">Nós provamos.</span>
         </h1>
         
-        <p class="text-base md:text-lg text-slate-500/90 max-w-xl mx-auto font-medium leading-relaxed px-4">
-            A nossa IA varre o teu extrato e deteta <strong class="text-slate-800">subscrições ocultas e taxas abusivas</strong> em menos de 10 segundos.
+        <p class="text-lg md:text-2xl text-slate-400 max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
+            Uma IA exata que varre o teu extrato bancário em 10 segundos, encontra <strong class="text-white">taxas fantasmas e subscrições ocultas</strong>, e diz-te exatamente quanto estás a perder por ano.
         </p>
+
+        <div class="flex flex-col items-center justify-center gap-6 mb-24">
+            <a href="/auditoria.html" class="group relative inline-flex items-center justify-center w-full md:w-auto">
+                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-[2rem] blur opacity-75 group-hover:opacity-100 transition duration-500 group-hover:duration-200"></div>
+                <button class="relative w-full md:w-auto bg-slate-900 text-white px-12 py-5 rounded-[2rem] font-black text-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
+                    Iniciar Auditoria Grátis
+                    <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </a>
+            
+            <div class="flex items-center gap-2 text-sm font-bold text-slate-500 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
+                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                Extrato analisado na RAM. Apagado num milissegundo.
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto relative z-20">
+            <div class="glass-panel p-8 rounded-[2rem]">
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Total Resgatado Hoje</p>
+                <div class="flex items-baseline justify-center gap-1">
+                    <h3 class="text-4xl md:text-5xl font-black text-emerald-400" id="liveCounter">14,250</h3>
+                    <span class="text-2xl font-bold text-emerald-500">€</span>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-[2rem]">
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Prejuízo Médio Encontrado</p>
+                <h3 class="text-4xl md:text-5xl font-black text-white">412<span class="text-2xl text-slate-500">€/ano</span></h3>
+            </div>
+            <div class="glass-panel p-8 rounded-[2rem]">
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Auditorias Realizadas</p>
+                <h3 class="text-4xl md:text-5xl font-black text-white">8.402</h3>
+            </div>
+        </div>
     </header>
 
-    <main class="max-w-3xl mx-auto px-4 md:px-6 mb-20 w-full relative z-10 flex-grow">
-        
-        <div class="neo-glass p-6 md:p-8 rounded-[2rem] relative overflow-hidden" id="areaUpload">
-            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-emerald-400/20 rounded-full blur-[60px] pointer-events-none"></div>
-            
-            <div id="dropzone" class="relative border-[2px] border-dashed border-slate-300/70 bg-white/40 rounded-[1.5rem] p-8 md:p-12 text-center cursor-pointer hover:bg-white/60 hover:border-emerald-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] transition-all duration-300 flex flex-col items-center justify-center gap-4 group overflow-hidden">
-                <div class="scanner-line"></div>
-                
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative z-10" id="dropzoneIcon">
-                    <svg class="w-8 h-8 text-slate-300 group-hover:text-emerald-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </div>
-                <div class="relative z-10">
-                    <p class="text-slate-800 font-extrabold text-xl mb-1 group-hover:text-emerald-700" id="dropzoneText">Largar Extrato PDF</p>
-                    <p class="text-xs font-semibold text-slate-400" id="dropzoneSub">Totalmente encriptado e destruído após leitura</p>
-                </div>
-                <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+    <section class="relative z-10 py-24 bg-slate-900/50 border-y border-slate-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl font-black text-white mb-6">Como o Detetive funciona?</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">Três passos simples. Zero complexidade. Centenas de euros poupados.</p>
             </div>
 
-            <div id="loadingStatus" class="hidden mt-6 bg-slate-900 rounded-[1.2rem] p-6 shadow-inner border border-slate-800">
-                <div class="flex justify-between items-end mb-2">
-                    <span id="loadingText" class="text-emerald-400 text-xs font-bold font-mono tracking-wider">A desencriptar transações...</span>
-                    <span id="loadingPercent" class="text-emerald-500 text-xs font-black font-mono">0%</span>
-                </div>
-                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div id="progressBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <button id="btnAnalisar" class="mt-6 w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-800 text-white font-black text-lg py-4 rounded-[1.2rem] transition-all duration-300 flex justify-center items-center gap-2 hidden shadow-xl hover:-translate-y-0.5">
-                <span id="btnTexto" class="tracking-wide">Iniciar Auditoria IA Grátis</span>
-            </button>
-        </div>
-
-        <div id="areaResultados" class="mt-16 hidden">
-            
-            <div class="bg-slate-900 p-10 md:p-12 rounded-[2.5rem] text-center mb-10 shadow-2xl relative overflow-hidden border border-slate-700/50">
-                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50"></div>
-                
-                <h3 class="text-emerald-400 font-extrabold uppercase tracking-[0.2em] text-[10px] mb-4 relative z-10 flex justify-center items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Desperdício Anual Estimado
-                </h3>
-                
-                <div class="relative z-10 flex justify-center items-baseline gap-1 mb-2">
-                    <p id="valorAnual" class="text-7xl md:text-[6rem] font-black text-white tracking-tighter drop-shadow-xl">0</p>
-                    <span class="text-4xl font-bold text-emerald-400">€</span>
-                </div>
-                
-                <div class="mt-6 bg-white/5 border border-white/10 rounded-xl p-4 inline-block relative z-10 backdrop-blur-md w-full">
-                    <p id="mensagemImpacto" class="text-slate-300 font-medium text-sm md:text-base leading-relaxed tracking-wide"></p>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between mb-6 px-2">
-                <h3 class="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                    <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Fugas de capital encontradas:
-                </h3>
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-200/50 px-3 py-1 rounded-full">Ordenado por valor</span>
-            </div>
-            
-            <div id="listaSubscricoes" class="space-y-3 mb-16"></div>
-            
-            <div id="paywall" class="bg-white p-10 md:p-14 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 text-center relative z-10 border border-slate-100 max-w-2xl mx-auto mb-10">
-                
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 text-rose-500 mb-6">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                
-                <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">Trava a sangria hoje.</h2>
-                
-                <p class="text-slate-500 mb-8 font-medium text-base md:text-[17px] leading-relaxed max-w-lg mx-auto">
-                    Os bancos e as empresas dificultam o cancelamento de propósito. A nossa IA já escreveu <strong class="text-slate-800">os e-mails com as leis europeias exatas</strong> para cancelar cada uma destas despesas bloqueadas de forma irreversível.
-                </p>
-                
-                <div class="max-w-md mx-auto mb-5 relative">
-                    <input type="email" required autocomplete="email" placeholder="O teu melhor e-mail..." class="w-full pl-5 pr-14 py-4 bg-white border border-slate-200 rounded-[1rem] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-medium text-slate-700 shadow-sm placeholder-slate-400 text-base">
-                    <div class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-slate-800 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-slate-700 shadow-xl relative z-10">
+                        <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
+                    <h4 class="font-black text-2xl text-white mb-4">1. Sobe o PDF</h4>
+                    <p class="text-slate-400 font-medium leading-relaxed">Faz upload do teu extrato bancário. Não pedimos acessos à tua conta, passwords ou chaves móveis.</p>
                 </div>
-                
-                <button id="btnPagar" class="w-full max-w-md mx-auto bg-slate-900 hover:bg-slate-800 text-white font-black text-[17px] py-4 rounded-[1rem] transition-all duration-300 shadow-xl hover:-translate-y-0.5 flex flex-col items-center justify-center gap-1 group">
-                    <span id="txtBtnPagar" class="flex items-center gap-2">
-                        Desbloquear E-mails Prontos
-                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </span>
-                    <span class="text-emerald-400 text-[10px] font-bold tracking-wider uppercase mt-0.5 opacity-90">Pagamento Único de 4,99€</span>
-                </button>
-
-                <div class="mt-6 flex flex-wrap justify-center items-center gap-6 text-xs font-semibold text-slate-500">
-                    <span class="flex items-center gap-1.5">
-                        <div class="bg-emerald-500 text-white rounded-full p-0.5">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        Pagamento Stripe Seguro
-                    </span>
-                    <span class="flex items-center gap-1.5">
-                        <div class="bg-emerald-500 text-white rounded-full p-0.5">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        Entrega Imediata
-                    </span>
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-emerald-500/30 shadow-xl shadow-emerald-500/10 relative z-10">
+                        <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h4 class="font-black text-2xl text-white mb-4">2. Auditoria IA</h4>
+                    <p class="text-slate-400 font-medium leading-relaxed">A Inteligência Artificial cruza os teus movimentos com milhares de comissões predatórias conhecidas em 10 segundos.</p>
+                </div>
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-emerald-500/30 relative z-10">
+                        <svg class="w-8 h-8 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="font-black text-2xl text-white mb-4">3. Resgata o Dinheiro</h4>
+                    <p class="text-slate-400 font-medium leading-relaxed">Entregamos-te o relatório exato do desperdício e as minutas legais prontas a enviar para cancelares tudo.</p>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <footer class="text-center pb-8 text-slate-400 text-xs font-bold tracking-wide relative z-10 opacity-60">
-        &copy; 2026 Detetive de Fugas &bull; Tecnologia Neural Privada
+    <section class="relative z-10 py-24 max-w-5xl mx-auto px-6">
+        <div class="glass-panel p-10 md:p-16 rounded-[3rem] text-center relative overflow-hidden border border-emerald-500/20">
+            <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/10 to-transparent pointer-events-none"></div>
+            
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 border border-slate-700 mb-8">
+                <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-6">Segurança Nível Militar.</h2>
+            <p class="text-slate-400 text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+                Nós não somos um banco e não guardamos dados. O teu extrato é <span class="text-white font-bold">analisado na memória RAM</span> e destruído permanentemente no milissegundo em que o relatório é gerado.
+            </p>
+            
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" class="h-8 hover:grayscale-0 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Cloud" class="h-8 hover:grayscale-0 transition-all invert">
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative z-10 border-t border-slate-800 bg-slate-900/80 mt-10">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-emerald-500 rounded flex items-center justify-center">
+                    <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <span class="font-bold text-sm tracking-tighter text-white">Detetive<span class="text-emerald-400">Fugas</span></span>
+            </div>
+            <p class="text-slate-500 text-xs font-semibold">© 2026 Todos os direitos reservados. Não armazenamos dados financeiros.</p>
+            <div class="flex gap-4 text-xs font-bold text-slate-400">
+                <a href="#" class="hover:text-emerald-400 transition-colors">Termos & Privacidade</a>
+            </div>
+        </div>
     </footer>
 
-    <script src="app.js"></script>
+    <script>
+        // Animação do contador de Euros resgatados para criar "Urgência e Vida"
+        const counterElement = document.getElementById('liveCounter');
+        let currentAmount = 14250;
+
+        setInterval(() => {
+            // Adiciona valores aleatórios entre 12€ e 45€ a cada 4-8 segundos
+            const jump = Math.floor(Math.random() * (45 - 12 + 1) + 12);
+            currentAmount += jump;
+            // Formata o número com vírgula para PT-PT
+            counterElement.innerText = currentAmount.toLocaleString('pt-PT');
+            
+            // Efeito de brilho quando atualiza
+            counterElement.classList.add('text-white');
+            setTimeout(() => {
+                counterElement.classList.remove('text-white');
+            }, 300);
+        }, Math.random() * 4000 + 4000); 
+    </script>
 </body>
 </html>
