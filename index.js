@@ -1,140 +1,223 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const multer = require('multer');
-const path = require('path');
-const nodemailer = require('nodemailer');
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const dropzoneText = document.getElementById('dropzoneText');
+const btnAnalisar = document.getElementById('btnAnalisar');
+let ficheiroSelecionado = null;
 
-if (!process.env.STRIPE_SECRET_KEY || !process.env.GEMINI_API_KEY) {
-    console.error("🚨 ALERTA: Chaves da API em falta (STRIPE_SECRET_KEY ou GEMINI_API_KEY).");
+function mostrarToast(mensagem, tipo = 'erro') {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastIcon = document.getElementById('toastIcon');
+    if(!toast) return alert(mensagem);
+
+    toastMsg.innerText = mensagem;
+    toastIcon.innerText = tipo === 'erro' ? '⚠️' : '✅';
+    toast.classList.remove('opacity-0', '-translate-y-10');
+    setTimeout(() => { toast.classList.add('opacity-0', '-translate-y-10'); }, 5000);
 }
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+dropzone.addEventListener('click', () => fileInput.click());
 
-const app = express();
-app.use(cors());
+['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-emerald-400', 'bg-white/80', 'scale-[1.02]', 'shadow-xl');
+    });
+});
 
-// ==========================================
-// 🛡️ WEBHOOK DO STRIPE (MUITO IMPORTANTE ESTAR AQUI)
-// ==========================================
-app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
+['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-emerald-400', 'bg-white/80', 'scale-[1.02]', 'shadow-xl');
+    });
+});
+
+dropzone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files.length > 0) {
+        ficheiroSelecionado = e.dataTransfer.files[0];
+        mostrarFicheiroPronto();
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        ficheiroSelecionado = e.target.files[0];
+        mostrarFicheiroPronto();
+    }
+});
+
+function mostrarFicheiroPronto() {
+    if (ficheiroSelecionado.type !== "application/pdf") {
+        mostrarToast("Erro: Apenas formatos PDF são suportados.", "erro");
+        ficheiroSelecionado = null;
+        return;
+    }
+    dropzone.classList.add('border-emerald-400', 'bg-emerald-50/40');
+    dropzoneText.innerHTML = `<span class="text-emerald-700 font-black text-xl tracking-tight">📄 PDF Pronto</span>`;
+    document.getElementById('dropzoneSub').innerText = ficheiroSelecionado.name;
+    document.getElementById('dropzoneIcon').classList.add('text-emerald-500');
+    btnAnalisar.classList.remove('hidden');
+}
+
+btnAnalisar.addEventListener('click', async () => {
+    if (!ficheiroSelecionado) return;
+
+    const areaResultados = document.getElementById('areaResultados');
+    const loadingStatus = document.getElementById('loadingStatus');
+    const progressBar = document.getElementById('progressBar');
+    const loadingText = document.getElementById('loadingText');
+    const loadingPercent = document.getElementById('loadingPercent');
+
+    btnAnalisar.classList.add('hidden');
+    dropzone.classList.add('hidden');
+    loadingStatus.classList.remove('hidden');
+    areaResultados.classList.add('hidden');
+
+    const frasesCarregamento = ["A desencriptar extrato...", "A cruzar 12.000 padrões...", "A isolar comissões...", "A detetar subscrições ocultas...", "A calcular o teu prejuízo..."];
+    let fraseIndex = 0; let progresso = 0;
+    
+    const progressInterval = setInterval(() => {
+        if (progresso < 95) {
+            progresso += Math.random() * 5;
+            if(progresso > 95) progresso = 95;
+            progressBar.style.width = `${progresso}%`;
+            loadingPercent.innerText = `${Math.floor(progresso)}%`;
+        }
+    }, 300);
+
+    const textInterval = setInterval(() => {
+        loadingText.innerText = frasesCarregamento[fraseIndex];
+        fraseIndex = (fraseIndex + 1) % frasesCarregamento.length;
+    }, 2000);
+
+    const formData = new FormData();
+    formData.append('extrato', ficheiroSelecionado);
 
     try {
-        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET; 
-        if(endpointSecret) {
-            event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-        } else {
-            event = JSON.parse(req.body); 
-        }
-    } catch (err) {
-        console.error(`❌ Erro no Webhook: ${err.message}`);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+        const resposta = await fetch('/api/analisar-pdf', { method: 'POST', body: formData });
+        const resultado = await resposta.json();
+        
+        clearInterval(textInterval); clearInterval(progressInterval);
 
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        const emailCliente = session.customer_details.email;
-        
-        console.log(`💰 PAGAMENTO CONFIRMADO DE: ${emailCliente}`);
-        
-        // ENVIO DO E-MAIL AUTOMÁTICO
-        try {
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER, 
-                    pass: process.env.EMAIL_PASS  
+        if (resultado.sucesso) {
+            progressBar.style.width = '100%';
+            loadingPercent.innerText = '100%';
+            loadingText.innerText = 'Análise Completa!';
+            
+            setTimeout(() => {
+                loadingStatus.classList.add('hidden'); 
+                document.getElementById('areaUpload').classList.add('hidden'); 
+                areaResultados.classList.remove('hidden'); 
+                
+                const valObj = document.getElementById('valorAnual');
+                const total = resultado.dados.total_desperdicado_anual || 0;
+                let startTimestamp = null;
+                const duration = 2000; 
+
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    valObj.innerText = Math.floor(easeOut * total).toLocaleString('pt-PT');
+                    if (progress < 1) window.requestAnimationFrame(step);
+                    else valObj.innerText = total.toLocaleString('pt-PT'); 
+                };
+                window.requestAnimationFrame(step);
+
+                document.getElementById('mensagemImpacto').innerText = `"${resultado.dados.mensagem_impacto || 'Extrato processado com sucesso.'}"`;
+
+                const lista = document.getElementById('listaSubscricoes');
+                lista.innerHTML = '';
+
+                let subscricoes = resultado.dados.subscricoes_encontradas || [];
+                subscricoes.sort((a, b) => parseFloat(b.valor_mensal) - parseFloat(a.valor_mensal));
+
+                const freeCount = subscricoes.length > 2 ? 2 : 1;
+
+                if (subscricoes.length === 0) {
+                    lista.innerHTML = `<div class="text-center p-6 text-slate-500 font-bold bg-white rounded-[1.5rem] shadow-sm">Nenhuma fuga grave detetada neste documento.</div>`;
                 }
-            });
 
-            await transporter.sendMail({
-                from: '"Detetive de Fugas" <noreply@detetivedefugas.pt>',
-                to: emailCliente,
-                subject: "🚨 O teu Relatório de Fugas e Minutas de Cancelamento",
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #1e293b;">
-                        <h2 style="color: #10b981;">Obrigado por confiares no Detetive de Fugas!</h2>
-                        <p>O teu pagamento foi processado com sucesso. Como prometido, aqui estão as ferramentas legais para estancares a perda de dinheiro:</p>
-                        <br>
-                        <h3>📄 Minuta de Lei Europeia (Direito ao Esquecimento e Cancelamento):</h3>
-                        <div style="background:#f1f5f9; padding:20px; border-radius:10px; border-left: 4px solid #10b981; font-family: monospace;">
-                            "Exmo(a) Senhor(a),<br><br>
-                            Venho por este meio exercer o meu direito de cancelamento imediato do serviço associado a esta conta/cartão, bem como o direito ao apagamento dos meus dados pessoais nos termos do RGPD (Artigo 17.º).<br><br>
-                            Exijo o cancelamento com efeitos imediatos e a confirmação por escrito no prazo máximo de 48 horas, sob pena de apresentar queixa-crime às entidades reguladoras (Banco de Portugal / ASAE).<br><br>
-                            Com os melhores cumprimentos."
+                subscricoes.forEach((sub, index) => {
+                    const isLocked = index >= freeCount; 
+                    let colorClass = 'emerald';
+                    let iconSVG = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                    
+                    if (sub.nivel_alerta === 'Vermelho') { colorClass = 'rose'; iconSVG = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>'; }
+                    else if (sub.nivel_alerta === 'Laranja') { colorClass = 'orange'; iconSVG = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'; }
+                    
+                    const nomeExibicao = isLocked ? `<span class="blur-[5px] select-none text-slate-900 font-mono tracking-widest opacity-40">CLASSIFICADO</span>` : sub.nome;
+                    const valorExibicao = isLocked ? `<span class="blur-[4px] select-none opacity-50">XX,XX</span>` : sub.valor_mensal;
+                    
+                    const lockedBadge = isLocked 
+                        ? `<button onclick="document.getElementById('paywall').scrollIntoView({behavior: 'smooth'})" class="bg-slate-800 text-emerald-400 font-bold px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-widest shadow-lg hover:bg-slate-700 transition-colors relative z-30">Desbloquear</button>`
+                        : `<span class="bg-${colorClass}-100 text-${colorClass}-700 font-bold px-2 py-1 rounded text-[9px] uppercase tracking-widest border border-${colorClass}-200">Detetado</span>`;
+
+                    lista.innerHTML += `
+                        <div class="bg-white p-4 sm:p-5 rounded-[1.5rem] shadow-sm border ${isLocked ? 'border-slate-300 locked-item' : `border-${colorClass}-200 shadow-md`} flex justify-between items-center relative overflow-hidden transition-all duration-300">
+                            ${isLocked ? '<div class="absolute inset-0 bg-slate-100/60 pointer-events-none z-10 backdrop-blur-[1px]"></div>' : ''}
+                            <div class="flex items-center gap-3 sm:gap-4 relative z-20">
+                                <div class="w-10 h-10 shrink-0 rounded-xl bg-${isLocked ? 'slate-200' : `${colorClass}-50`} border border-${isLocked ? 'slate-300' : `${colorClass}-100`} flex items-center justify-center text-${isLocked ? 'slate-400' : `${colorClass}-500`}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${isLocked ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>' : iconSVG}</svg>
+                                </div>
+                                <div>
+                                    <p class="font-black text-slate-800 text-sm sm:text-lg">${nomeExibicao}</p>
+                                    <p class="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-0.5">${isLocked ? 'Entidade Oculta' : sub.categoria}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex flex-col items-end gap-1.5 relative z-20">
+                                <p class="font-black text-lg sm:text-xl text-slate-900">${valorExibicao}€</p>
+                                ${lockedBadge}
+                            </div>
                         </div>
-                        <br>
-                        <p><strong>Ação imediata:</strong> Copia o texto acima e envia para o e-mail de suporte (ou formulário de contacto) de cada empresa listada no teu relatório.</p>
-                        <p>Um abraço,<br><strong>Equipa Detetive de Fugas</strong></p>
-                    </div>
-                `
-            });
-            console.log("✅ E-mail enviado com sucesso!");
-        } catch (erroEmail) {
-            console.error("❌ Erro a enviar e-mail (Verifica as tuas credenciais Gmail):", erroEmail.message);
+                    `;
+                });
+
+                mostrarToast("Auditoria concluída com sucesso.", "sucesso");
+                areaResultados.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            }, 500); 
+            
+        } else {
+            mostrarToast(resultado.erro || "Falha na análise.", "erro");
+            reiniciarUI();
         }
-    }
 
-    res.json({received: true});
-});
-
-// ==========================================
-// ROTAS NORMAIS DA APLICAÇÃO
-// ==========================================
-app.use(express.json());
-app.use(express.static('public'));
-
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.get('/auditoria.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'auditoria.html')));
-
-const upload = multer({ storage: multer.memoryStorage() }); 
-
-// ROTA DA IA 
-app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
-    if (!req.file) return res.status(400).json({ erro: 'Nenhum ficheiro recebido.' });
-
-    try {
-        const documentoPDF = { inlineData: { data: req.file.buffer.toString("base64"), mimeType: "application/pdf" } };
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro", generationConfig: { temperature: 0 } });
-        
-        const prompt = `És um detetive financeiro robótico, exato e implacável. Analisa o documento PDF em anexo (extrato bancário).
-        Foca-te EXCLUSIVAMENTE nestas 3 categorias: 1. Comissões bancárias, taxas. 2. Subscrições. 3. Seguros/Telecomunicações.
-        Devolve APENAS um objeto JSON válido: {"total_desperdicado_mensal": 0, "total_desperdicado_anual": 0, "subscricoes_encontradas": [{"nome": "Nome", "valor_mensal": 0, "categoria": "Categoria", "nivel_alerta": "Vermelho/Laranja/Amarelo"}], "mensagem_impacto": "Uma frase agressiva sobre a perda de dinheiro."}`;
-
-        const result = await model.generateContent([prompt, documentoPDF]);
-        let respostaIA = result.response.text().replace(/```json/g, "").replace(/```/g, "").trim();
-        const jsonLimpo = respostaIA.substring(respostaIA.indexOf('{'), respostaIA.lastIndexOf('}') + 1);
-
-        res.status(200).json({ sucesso: true, dados: JSON.parse(jsonLimpo) });
-    } catch (error) {
-        if (error.status === 429) return res.status(429).json({ sucesso: false, erro: 'Tráfego elevado. Aguarda 30 seg.' });
-        res.status(500).json({ sucesso: false, erro: 'Falha na IA ao ler o PDF.' });
+    } catch (erro) {
+        clearInterval(textInterval); clearInterval(progressInterval);
+        mostrarToast("Erro! O servidor central está offline ou sobrecarregado.", "erro");
+        reiniciarUI();
     }
 });
 
-// ROTA DO PAGAMENTO
-app.post('/api/checkout', async (req, res) => {
-    try {
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            customer_creation: 'always', // Obriga o Stripe a pedir o e-mail
-            line_items: [{
-                price_data: { currency: 'eur', product_data: { name: 'Desbloqueio do Relatório e Minutas' }, unit_amount: 499 },
-                quantity: 1,
-            }],
-            mode: 'payment',
-            success_url: `${req.protocol}://${req.get('host')}/sucesso.html`,
-            cancel_url: `${req.protocol}://${req.get('host')}/auditoria.html`,
-        });
-        res.json({ url: session.url });
-    } catch (error) {
-        res.status(500).json({ erro: 'Erro a conectar ao banco.' });
-    }
-});
+function reiniciarUI() {
+    document.getElementById('loadingStatus').classList.add('hidden');
+    dropzone.classList.remove('hidden');
+    btnAnalisar.classList.remove('hidden');
+    btnAnalisar.disabled = false;
+}
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Motor de IA e Vendas online na porta ${PORT}`));
+const btnPagar = document.getElementById('btnPagar');
+if (btnPagar) {
+    btnPagar.addEventListener('click', async () => {
+        const txtBtn = document.getElementById('txtBtnPagar');
+        btnPagar.disabled = true;
+        txtBtn.innerHTML = `A preparar cofre... <svg class="animate-spin w-4 h-4 ml-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        try {
+            const resposta = await fetch('/api/checkout', { method: 'POST' });
+            const dados = await resposta.json();
+            if (dados.url) {
+                window.location.href = dados.url; 
+            } else {
+                mostrarToast("Erro a gerar pagamento.", "erro");
+                btnPagar.disabled = false;
+                txtBtn.innerHTML = `Desbloquear Acesso Total <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+            }
+        } catch (erro) {
+            mostrarToast("Erro de ligação ao banco.", "erro");
+            btnPagar.disabled = false;
+            txtBtn.innerHTML = `Desbloquear Acesso Total <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        }
+    });
+}
