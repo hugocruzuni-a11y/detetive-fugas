@@ -1,13 +1,14 @@
 {
   "name": "detetive-fugas",
   "version": "1.0.0",
-  "description": "",
+  "description": "Plataforma IA para detetar fugas de capital",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["ia", "financas", "stripe"],
+  "author": "Hugo",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

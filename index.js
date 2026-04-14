@@ -4,28 +4,35 @@ const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const multer = require('multer');
 
-// --- LIGAÇÃO AO STRIPE ---
-// No topo do teu index.js
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Tem de ser igual ao nome no Render
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Tem de ser igual ao nome no Rendergit add
+// --- 🛡️ SISTEMA DE AUTO-DIAGNÓSTICO 2050 ---
+if (!process.env.STRIPE_SECRET_KEY || !process.env.GEMINI_API_KEY) {
+    console.error("🚨 ALERTA VERMELHO: Chaves da API em falta!");
+    console.error("Verifica se o 'STRIPE_SECRET_KEY' e o 'GEMINI_API_KEY' estão nas Environment Variables do Render.");
+}
+
+// --- LIGAÇÕES CENTRAIS ---
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+// Diz ao Express para servir a pasta 'public' onde está o teu site
 app.use(express.static('public'));
 
 const upload = multer({ storage: multer.memoryStorage() }); 
 
 // --- ROTA 1: A IA QUE DETETA AS FUGAS ---
 app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
-    console.log("🕵️ INÍCIO DA INVESTIGAÇÃO 2050...");
+    console.log("\n-----------------------------------------");
+    console.log("🕵️ INÍCIO DA INVESTIGAÇÃO IA...");
     
     if (!req.file) {
         return res.status(400).json({ erro: 'Nenhum ficheiro recebido.' });
     }
 
     try {
-        console.log(`✅ Ficheiro: ${req.file.originalname} (Tamanho: ${(req.file.size / 1024 / 1024).toFixed(2)} MB)`);
+        console.log(`✅ Ficheiro recebido: ${req.file.originalname} (Tamanho: ${(req.file.size / 1024 / 1024).toFixed(2)} MB)`);
         
         const documentoPDF = {
             inlineData: {
@@ -36,11 +43,7 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-pro",
-            generationConfig: {
-                temperature: 0, 
-                topP: 1,
-                topK: 1
-            }
+            generationConfig: { temperature: 0, topP: 1, topK: 1 }
         });
         
         const prompt = `
@@ -69,69 +72,45 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         }
         `;
 
-        console.log(`⏳ A injetar os dados no modelo [gemini-2.5-pro]...`);
+        console.log(`⏳ A analisar o extrato com Gemini 2.5 Pro...`);
         
         let tentativas = 0;
-        let maxTentativas = 6;
+        let maxTentativas = 3;
         let result = null;
 
         while (tentativas < maxTentativas) {
             try {
-                if (tentativas > 0) {
-                    console.log(`🔄 [Tentativa ${tentativas + 1}/${maxTentativas}] A tentar furar o trânsito da Google...`);
-                }
-                
                 result = await model.generateContent([prompt, documentoPDF]);
                 break;
-                
             } catch (erroIA) {
                 tentativas++;
-                
-                if (erroIA.status === 503 || erroIA.status === 429 || (erroIA.message && (erroIA.message.includes('503') || erroIA.message.includes('429')))) {
-                    console.log(`⚠️ Servidores da Google lotados. A aguardar 10 segundos em silêncio... 🤫`);
-                    
-                    if (tentativas >= maxTentativas) {
-                        throw new Error("A Google está completamente esgotada neste momento.");
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 10000));
-                } else {
-                    throw erroIA;
-                }
+                console.log(`⚠️ Tentativa ${tentativas} falhou. A tentar novamente...`);
+                if (tentativas >= maxTentativas) throw erroIA;
+                await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
 
-        console.log("✅ A IA processou os dados com sucesso!");
+        console.log("✅ IA processou os dados com sucesso!");
         
         let respostaIA = result.response.text();
         respostaIA = respostaIA.replace(/```json/g, "").replace(/```/g, "").trim();
-        const inicioJSON = respostaIA.indexOf('{');
-        const fimJSON = respostaIA.lastIndexOf('}') + 1;
-        const jsonLimpo = respostaIA.substring(inicioJSON, fimJSON);
+        const jsonLimpo = respostaIA.substring(respostaIA.indexOf('{'), respostaIA.lastIndexOf('}') + 1);
 
-        const dadosJSON = JSON.parse(jsonLimpo);
-
-        res.status(200).json({ sucesso: true, dados: dadosJSON });
+        res.status(200).json({ sucesso: true, dados: JSON.parse(jsonLimpo) });
 
     } catch (error) {
-        console.error("\n🚨 ALARME DO SISTEMA 🚨");
-        
+        console.error("❌ ERRO NO MOTOR IA:", error.message || error);
         if (error.status === 429 || (error.message && error.message.includes('429'))) {
-            console.error("❌ ERRO 429: Limite de velocidade atingido.");
-            return res.status(429).json({ 
-                sucesso: false, 
-                erro: '⚠️ Atingimos o limite da Google. Por favor, aguarda 60 segundos e tenta novamente.' 
-            });
+            return res.status(429).json({ sucesso: false, erro: 'Tráfego elevado. Aguarda 30 segundos e tenta de novo.' });
         }
-
-        console.error(error.message || error);
-        res.status(500).json({ sucesso: false, erro: 'Ups! A IA teve um soluço. Verifica o teu PDF.' });
+        res.status(500).json({ sucesso: false, erro: 'Falha na leitura do PDF. Garante que é um extrato válido.' });
     }
 });
 
 // --- ROTA 2: A CAIXA REGISTADORA (STRIPE) ---
 app.post('/api/checkout', async (req, res) => {
     try {
-        console.log("💳 A gerar link de pagamento no Stripe...");
+        console.log("💳 A gerar link de pagamento super-seguro no Stripe...");
         
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -141,28 +120,30 @@ app.post('/api/checkout', async (req, res) => {
                         currency: 'eur',
                         product_data: {
                             name: 'Desbloqueio do Relatório de Fugas',
-                            description: 'Acesso total a todas as subscrições ocultas e minutas de cancelamento.',
+                            description: 'Acesso total a todas as subscrições ocultas e minutas de cancelamento legais.',
                         },
-                        unit_amount: 499, // Valor em cêntimos (4,99€)
+                        unit_amount: 499, // 4,99€
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            // URLs de retorno dinâmicas (funciona no Localhost e no Render)
+            // O código abaixo deteta se estás no localhost ou no domínio real do Render
             success_url: `${req.protocol}://${req.get('host')}/sucesso.html`,
             cancel_url: `${req.protocol}://${req.get('host')}/`,
         });
 
         res.json({ url: session.url });
     } catch (error) {
-        console.error("Erro no Stripe:", error.message);
-        res.status(500).json({ erro: 'Erro a criar pagamento.' });
+        console.error("❌ Erro no Stripe:", error.message);
+        res.status(500).json({ erro: 'O banco rejeitou a criação da sessão de pagamento.' });
     }
 });
 
-// --- PORTA DINÂMICA (CRÍTICO PARA O RENDER) ---
+// --- ARRANCAR O SERVIDOR ---
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`🚀 Motor 2050 a faturar na porta ${PORT}`);
+    console.log(`\n🚀 ==========================================`);
+    console.log(`🚀 SUCESSO: Detetive Online na porta ${PORT}`);
+    console.log(`🚀 ==========================================\n`);
 });
