@@ -3,100 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auditoria | Detetive de Fugas</title>
+    <title>Auditoria Forense | Detetive de Fugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(-45deg, #f8fafc, #ecfdf5, #f0fdfa, #f8fafc); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .neo-glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.1); }
-        .scanner-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, #10b981, transparent); box-shadow: 0 2px 10px #10b981; animation: scan 2s infinite linear; opacity: 0; transition: opacity 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; }
+        .bg-mesh { background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 24px 24px; }
+        .neo-glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+        .scanner-line { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, transparent, #10b981, transparent); box-shadow: 0 0 20px #10b981; animation: scan 2s infinite ease-in-out; opacity: 0; transition: opacity 0.3s; }
         .group:hover .scanner-line { opacity: 1; }
-        @keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        @keyframes scan { 0% { top: -10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
         .locked-item { background-image: repeating-linear-gradient(45deg, rgba(241,245,249,0.5) 0, rgba(241,245,249,0.5) 4px, transparent 4px, transparent 8px); }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
-<body class="text-slate-800 min-h-[100dvh] flex flex-col relative overflow-x-hidden">
+<body class="text-slate-100 min-h-[100dvh] flex flex-col relative overflow-x-hidden bg-mesh">
 
-    <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 opacity-0 -translate-y-10 w-[90%] max-w-sm pointer-events-none">
-        <div class="bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-xl shadow-2xl font-bold text-sm flex items-center gap-3 border border-slate-700/50">
-            <span id="toastIcon">⚠️</span><span id="toastMsg" class="flex-1 truncate">Mensagem</span>
+    <div class="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-3xl h-[60vh] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+
+    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 opacity-0 -translate-y-10 w-[90%] max-w-sm pointer-events-none">
+        <div class="bg-slate-900/95 backdrop-blur-xl text-white px-5 py-4 rounded-2xl shadow-2xl font-bold text-sm flex items-center gap-3 border border-slate-700">
+            <span id="toastIcon" class="text-xl">⚠️</span><span id="toastMsg" class="flex-1">Mensagem</span>
         </div>
     </div>
 
-    <header class="text-center pt-8 pb-4 px-4 w-full max-w-3xl mx-auto relative z-10 shrink-0">
-        <a href="/" class="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-800 font-bold text-xs uppercase tracking-widest mb-6 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Voltar
+    <header class="text-center pt-10 pb-6 px-4 w-full max-w-3xl mx-auto relative z-10 shrink-0">
+        <a href="/" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-emerald-400 font-bold text-[10px] uppercase tracking-widest mb-6 transition-colors bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Voltar ao Início
         </a>
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
-            Auditoria <span class="text-emerald-500">Neural.</span>
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-3">
+            Auditoria <span class="text-emerald-400">Neural.</span>
         </h1>
-        <p class="text-sm sm:text-base text-slate-500 font-medium px-2">A ferramenta é exata. A privacidade é absoluta.</p>
+        <p class="text-sm sm:text-base text-slate-400 font-medium px-2 max-w-lg mx-auto">Coloca o teu PDF no cofre abaixo. Nenhum humano terá acesso aos dados.</p>
     </header>
 
-    <main class="w-full max-w-2xl mx-auto px-4 sm:px-6 flex-1 flex flex-col relative z-10 pb-12">
-        <div class="neo-glass p-4 sm:p-6 rounded-[2rem] relative overflow-hidden w-full" id="areaUpload">
-            <div id="dropzone" class="relative border-2 border-dashed border-slate-300/80 bg-white/50 rounded-[1.5rem] p-8 sm:p-12 text-center cursor-pointer hover:bg-white hover:border-emerald-400 transition-all flex flex-col items-center gap-3 group overflow-hidden">
+    <main class="w-full max-w-2xl mx-auto px-4 flex-1 flex flex-col relative z-10 pb-16">
+        
+        <div class="neo-glass p-5 sm:p-8 rounded-[2.5rem] relative w-full border-t border-t-slate-700" id="areaUpload">
+            <div id="dropzone" class="relative border-2 border-dashed border-slate-600 bg-slate-900/50 rounded-[2rem] p-10 sm:p-16 text-center cursor-pointer hover:bg-slate-800/80 hover:border-emerald-500 transition-all flex flex-col items-center gap-4 group overflow-hidden shadow-inner">
                 <div class="scanner-line"></div>
-                <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100 group-hover:scale-110 transition-transform relative z-10" id="dropzoneIcon">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-slate-300 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                <div class="bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-700 group-hover:scale-110 transition-transform relative z-10" id="dropzoneIcon">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-slate-800 font-black text-lg sm:text-xl group-hover:text-emerald-600" id="dropzoneText">Tocar para Subir PDF</p>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 mt-1" id="dropzoneSub">100% Encriptado e Seguro</p>
+                    <p class="text-white font-black text-xl sm:text-2xl group-hover:text-emerald-300" id="dropzoneText">Tocar para Subir Extrato</p>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-500 mt-2" id="dropzoneSub">Suporta ficheiros PDF oficiais</p>
                 </div>
                 <input type="file" id="fileInput" accept="application/pdf" class="hidden">
             </div>
 
-            <div id="loadingStatus" class="hidden mt-4 bg-slate-900 rounded-[1.5rem] p-5 shadow-inner">
-                <div class="flex justify-between items-end mb-2">
-                    <span id="loadingText" class="text-emerald-400 text-[10px] sm:text-xs font-bold font-mono uppercase tracking-widest">A processar...</span>
-                    <span id="loadingPercent" class="text-emerald-500 text-xs sm:text-sm font-black font-mono">0%</span>
+            <div id="loadingStatus" class="hidden mt-6 bg-slate-950 rounded-[2rem] p-6 sm:p-8 shadow-inner border border-slate-800 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-slate-800">
+                    <div id="progressBar" class="bg-emerald-500 h-1 shadow-[0_0_15px_#10b981] transition-all duration-200" style="width: 0%"></div>
                 </div>
-                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div id="progressBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div class="flex justify-between items-center mb-4 mt-2">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <span id="loadingPercent" class="text-emerald-400 text-xl font-black font-mono">0%</span>
                 </div>
+                <span id="loadingText" class="text-slate-300 text-sm font-bold font-mono tracking-wide">A encriptar comunicação...</span>
             </div>
 
-            <button id="btnAnalisar" class="mt-4 w-full bg-slate-900 text-white font-black text-base sm:text-lg py-4 rounded-[1.5rem] transition-all hidden hover:-translate-y-1 shadow-lg">
-                <span id="btnTexto">Iniciar Análise</span>
+            <button id="btnAnalisar" class="mt-6 w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-lg sm:text-xl py-5 rounded-[2rem] transition-all hidden hover:scale-[1.02] shadow-[0_10px_30px_rgba(16,185,129,0.3)]">
+                <span id="btnTexto">Iniciar Auditoria Forense</span>
             </button>
         </div>
 
-        <div id="areaResultados" class="mt-8 hidden w-full">
-            <div class="bg-slate-900 p-8 sm:p-10 rounded-[2rem] text-center mb-8 shadow-2xl relative overflow-hidden">
-                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-400"></div>
-                <h3 class="text-emerald-400 font-black uppercase tracking-[0.15em] text-[10px] sm:text-xs mb-2">Desperdício Anual Encontrado</h3>
-                <div class="flex justify-center items-baseline gap-1 mb-4">
-                    <p id="valorAnual" class="text-6xl sm:text-7xl font-black text-white tracking-tighter">0</p>
-                    <span class="text-3xl font-bold text-emerald-500">€</span>
+        <div id="areaResultados" class="mt-2 hidden w-full">
+            <div class="neo-glass p-8 sm:p-12 rounded-[2.5rem] text-center mb-10 relative overflow-hidden border-t-4 border-t-rose-500">
+                <div class="absolute inset-0 bg-gradient-to-b from-rose-500/10 to-transparent"></div>
+                <h3 class="text-rose-400 font-black uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 relative z-10">Prejuízo Anual Detetado</h3>
+                <div class="flex justify-center items-baseline gap-1 mb-6 relative z-10">
+                    <p id="valorAnual" class="text-7xl sm:text-[6rem] font-black text-white tracking-tighter drop-shadow-2xl">0</p>
+                    <span class="text-4xl font-bold text-rose-500">€</span>
                 </div>
-                <p id="mensagemImpacto" class="text-slate-300 font-medium text-xs sm:text-sm leading-relaxed max-w-sm mx-auto bg-white/5 p-3 rounded-lg border border-white/10"></p>
+                <div class="inline-block bg-slate-900/80 border border-slate-700/50 px-6 py-4 rounded-2xl backdrop-blur-sm relative z-10 w-full max-w-md">
+                    <p id="mensagemImpacto" class="text-slate-300 font-semibold text-sm leading-relaxed"></p>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between mb-4 px-1">
-                <h3 class="text-base sm:text-lg font-black text-slate-800 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Fugas Detetadas
+            <div class="flex items-center justify-between mb-5 px-2">
+                <h3 class="text-xl font-black text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Fugas Isoladas
                 </h3>
             </div>
             
-            <div id="listaSubscricoes" class="space-y-3 mb-10"></div>
+            <div id="listaSubscricoes" class="space-y-4 mb-12"></div>
             
-            <div id="paywall" class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-xl border border-slate-100 text-center relative w-full">
-                <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <div id="paywall" class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-2xl text-center relative w-full border-[6px] border-slate-900/5 overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                
+                <div class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-rose-100 text-rose-700 font-black text-[10px] uppercase tracking-widest mb-6 border border-rose-200">
+                    Ação Necessária Imediata
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-3 tracking-tight">Estanca a sangria.</h2>
-                <p class="text-slate-500 mb-6 font-medium text-xs sm:text-sm leading-relaxed max-w-sm mx-auto">
-                    Desbloqueia os nomes ocultos e recebe as <strong class="text-slate-800">minutas legais</strong> prontas a enviar para cancelares todas as taxas agora mesmo.
+                
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight leading-tight">Bloqueia Estas Cobranças Hoje.</h2>
+                
+                <p class="text-slate-600 mb-8 font-medium text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                    Os bancos contam com a tua inércia. Ao desbloqueares o relatório, revelamos os <strong class="text-slate-900">nomes ocultos</strong> e entregamos-te as <strong class="text-slate-900">minutas da Lei Europeia (RGPD)</strong> para forçares o cancelamento em 48h.
                 </p>
-                <button id="btnPagar" class="w-full max-w-sm mx-auto bg-slate-900 text-white font-black text-base sm:text-lg py-3 sm:py-4 rounded-xl hover:-translate-y-0.5 transition-all flex flex-col items-center gap-0.5 group shadow-lg">
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 max-w-sm mx-auto text-left">
+                    <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-200">
+                        <span class="text-slate-400 text-xs font-bold">Consultoria Financeira</span>
+                        <span class="text-slate-400 font-bold line-through">~ 150,00€</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-900 text-sm font-black flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Relatório Detetive IA
+                        </span>
+                        <span class="text-emerald-600 font-black text-xl">4,99€</span>
+                    </div>
+                </div>
+                
+                <button id="btnPagar" class="w-full max-w-sm mx-auto bg-slate-900 text-white font-black text-lg sm:text-xl py-5 rounded-[1.5rem] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(15,23,42,0.3)] transition-all flex flex-col items-center gap-1 group">
                     <span id="txtBtnPagar" class="flex items-center gap-2">
                         Desbloquear Acesso Total
-                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        <svg class="w-5 h-5 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </span>
-                    <span class="text-emerald-400 text-[9px] font-black tracking-widest uppercase opacity-90">Pagamento Único: 4,99€</span>
+                    <span class="text-emerald-400 text-[10px] font-bold tracking-widest uppercase opacity-90">Pagamento Seguro via Stripe</span>
                 </button>
             </div>
         </div>

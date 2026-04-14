@@ -3,93 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="A IA que analisa o teu extrato bancário e deteta fugas de capital em 10 segundos.">
-    <title>Detetive de Fugas | Resgata o Teu Dinheiro</title>
+    <meta name="description" content="Inteligência Artificial que analisa o teu extrato bancário e deteta fugas de capital ocultas em 10 segundos.">
+    <title>Detetive de Fugas | Para de dar dinheiro aos Bancos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
-        .bg-grid { background-size: 30px 30px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px); mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); }
-        .glow-text { text-shadow: 0 0 40px rgba(52, 211, 153, 0.5); }
-        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .bg-grid { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px); mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); }
+        .glow-text { text-shadow: 0 0 50px rgba(16, 185, 129, 0.6); }
+        .glass-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
     </style>
 </head>
 <body class="relative antialiased selection:bg-emerald-500 selection:text-white min-h-[100dvh] flex flex-col overflow-x-hidden">
     <div class="fixed inset-0 bg-grid pointer-events-none z-0"></div>
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[40vh] bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+    <div class="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[80%] max-w-2xl h-[50vh] bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-    <nav class="relative z-50 w-full max-w-7xl mx-auto px-4 sm:px-6 py-5 flex justify-between items-center">
-        <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                <svg class="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    <nav class="relative z-50 w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            <span class="font-black text-lg tracking-tighter hidden sm:block">Detetive<span class="text-emerald-400">Fugas</span></span>
+            <span class="font-black text-xl tracking-tighter">Detetive<span class="text-emerald-400">Fugas</span></span>
         </div>
-        <a href="/auditoria.html" class="glass-card text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-slate-900 transition-colors duration-300">Inspecionar Extrato</a>
+        <div class="flex items-center gap-4">
+            <span class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> 100% Seguro & RGPD
+            </span>
+            <a href="/auditoria.html" class="glass-card text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-slate-900 hover:border-emerald-400 transition-all duration-300">Auditoria Gratuita</a>
+        </div>
     </nav>
 
-    <main class="relative z-10 flex-1 flex flex-col justify-center w-full max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-16 text-center">
-        <div class="inline-flex items-center gap-2 glass-card text-emerald-400 px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest mx-auto mb-6 sm:mb-8 border-emerald-500/30">
+    <main class="relative z-10 flex-1 flex flex-col justify-center w-full max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
+        <div class="inline-flex items-center gap-2 glass-card text-emerald-400 px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest mx-auto mb-8 border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            IA Neural Gemini 1.5 Pro Ativa
+            Tecnologia Forense Neural
         </div>
-        <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 leading-[1.1] sm:leading-[1.05]">
-            O teu banco rouba-te.<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 glow-text">Nós provamos.</span>
+        
+        <h1 class="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight mb-8 leading-[1.05]">
+            Os bancos cobram-te.<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 glow-text">Nós detetamos.</span>
         </h1>
-        <p class="text-base sm:text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed px-2">
-            Uma IA que varre o teu extrato em <strong class="text-white">10 segundos</strong>, encontra taxas fantasmas e diz-te exatamente quanto estás a perder.
+        
+        <p class="text-lg sm:text-2xl text-slate-400 max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
+            Uma Inteligência Artificial de elite que varre o teu extrato em <strong class="text-white">10 segundos</strong>, deteta comissões fantasmas e serviços inúteis, e entrega-te o mapa para recuperares o teu dinheiro.
         </p>
 
-        <div class="flex flex-col items-center w-full max-w-sm mx-auto gap-4 mb-12 sm:mb-20">
-            <a href="/auditoria.html" class="group relative w-full">
-                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-2xl blur opacity-70 group-hover:opacity-100 transition duration-300"></div>
-                <button class="relative w-full bg-slate-900 text-white px-8 py-4 sm:py-5 rounded-2xl font-black text-lg sm:text-xl transition-all flex items-center justify-center gap-2">
-                    Iniciar Auditoria Grátis
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <div class="flex flex-col items-center w-full max-w-md mx-auto gap-5 mb-20">
+            <a href="/auditoria.html" class="group relative w-full block">
+                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-[2rem] blur-md opacity-70 group-hover:opacity-100 transition duration-300"></div>
+                <button class="relative w-full bg-slate-900 text-white px-8 py-5 rounded-[2rem] font-black text-xl transition-all flex items-center justify-center gap-3 border border-slate-700/50 group-hover:bg-slate-800">
+                    Iniciar Auditoria Forense
+                    <svg class="w-6 h-6 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
             </a>
-            <p class="text-xs font-bold text-slate-500 flex items-center justify-center gap-1.5 w-full">
-                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                Extrato destruído em milissegundos.
+            <p class="text-sm font-bold text-slate-500 flex items-center justify-center gap-2 w-full">
+                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                Ficheiro destruído instantaneamente. Sem registos.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 w-full">
-            <div class="glass-card p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem]">
-                <p class="text-slate-400 text-[10px] sm:text-xs font-black uppercase tracking-widest mb-1 sm:mb-2">Resgatado Hoje</p>
-                <div class="flex items-baseline justify-center gap-1">
-                    <h3 class="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-400" id="liveCounter">14.250</h3>
-                    <span class="text-xl sm:text-2xl font-bold text-emerald-500">€</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
+            <div class="glass-card p-8 sm:p-10 rounded-[2rem] border-t-2 border-t-emerald-500/30 text-left">
+                <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Total Resgatado Hoje</p>
+                <div class="flex items-baseline gap-1">
+                    <h3 class="text-4xl sm:text-5xl font-black text-emerald-400" id="liveCounter">24.250</h3>
+                    <span class="text-2xl font-bold text-emerald-500">€</span>
                 </div>
             </div>
-            <div class="glass-card p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] hidden sm:block">
-                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Prejuízo Médio</p>
-                <h3 class="text-4xl md:text-5xl font-black text-white">412<span class="text-xl text-slate-500">€/ano</span></h3>
+            
+            <div class="glass-card p-8 sm:p-10 rounded-[2rem] text-left">
+                <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Prejuízo Médio / Pessoa</p>
+                <h3 class="text-4xl sm:text-5xl font-black text-white">412<span class="text-xl text-slate-500 font-bold ml-1">€/ano</span></h3>
             </div>
-            <div class="glass-card p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem]">
-                <p class="text-slate-400 text-[10px] sm:text-xs font-black uppercase tracking-widest mb-1 sm:mb-2">Auditores Ativos</p>
-                <h3 class="text-3xl sm:text-4xl md:text-5xl font-black text-white">8.402</h3>
+
+            <div class="glass-card p-8 sm:p-10 rounded-[2rem] text-left">
+                <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Utilizadores Ativos</p>
+                <h3 class="text-4xl sm:text-5xl font-black text-white">12.804</h3>
             </div>
         </div>
     </main>
 
-    <footer class="relative z-10 w-full text-center py-6 text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-        &copy; 2026 Detetive de Fugas &bull; IA Privada
+    <footer class="relative z-10 w-full text-center py-8 border-t border-white/5 bg-slate-950/50">
+        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">&copy; 2026 Detetive de Fugas</p>
+        <p class="text-slate-600 text-[10px] max-w-md mx-auto">Não somos uma instituição financeira. A análise é efetuada localmente na memória volátil do servidor e eliminada de forma permanente após a operação, em estrita conformidade com a legislação europeia.</p>
     </footer>
 
     <script>
         const counterElement = document.getElementById('liveCounter');
-        let currentAmount = 14250;
+        let currentAmount = 24250;
         setInterval(() => {
-            currentAmount += Math.floor(Math.random() * 34 + 12);
+            currentAmount += Math.floor(Math.random() * 45 + 15);
             counterElement.innerText = currentAmount.toLocaleString('pt-PT');
-            counterElement.classList.add('text-white');
-            setTimeout(() => counterElement.classList.remove('text-white'), 300);
-        }, Math.random() * 4000 + 4000); 
+            counterElement.classList.add('text-white', 'scale-105');
+            setTimeout(() => counterElement.classList.remove('text-white', 'scale-105'), 300);
+        }, Math.random() * 3000 + 3000); 
     </script>
 </body>
 </html>
