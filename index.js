@@ -102,7 +102,7 @@ app.get('/auditoria.html', (req, res) => res.sendFile(path.join(__dirname, 'publ
 const upload = multer({ storage: multer.memoryStorage() }); 
 
 // =======================================================
-// 🧠 3. ROTA DA INTELIGÊNCIA ARTIFICIAL (GEMINI 1.5 PRO)
+// 🧠 3. ROTA DA INTELIGÊNCIA ARTIFICIAL (GEMINI 2.5 PRO)
 // =======================================================
 app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
     if (!req.file) return res.status(400).json({ erro: 'Nenhum ficheiro recebido.' });
@@ -111,7 +111,7 @@ app.post('/api/analisar-pdf', upload.single('extrato'), async (req, res) => {
         console.log("🕵️ A iniciar análise forense do documento...");
         const documentoPDF = { inlineData: { data: req.file.buffer.toString("base64"), mimeType: "application/pdf" } };
         
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: { temperature: 0 } });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro", generationConfig: { temperature: 0 } });
         
         const prompt = `Atua como um auditor financeiro forense de elite e implacável. Analisa o documento PDF em anexo (extrato). 
         Procura microscopicamente por: 1) Comissões bancárias de manutenção/cartões. 2) Subscrições digitais (Netflix, ginásios, apps). 3) Seguros e telecomunicações.
